@@ -1,0 +1,28 @@
+{
+  "name": "@geoffzhu/utils",
+  "version": "1.0.0",
+  "description": "A collection of common methods.",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup --config rollup.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeoffZhu/utils.git"
+  },
+  "author": "geoffzhu1992@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GeoffZhu/utils/issues"
+  },
+  "homepage": "https://github.com/GeoffZhu/utils#readme",
+  "dependencies": {
+    "rollup": "^0.53.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "rollup-plugin-babel": "^3.0.3"
+  }
+}
