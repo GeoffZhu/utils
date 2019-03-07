@@ -119,3 +119,124 @@ export function getElementTop(element) {
   }
   return element.getBoundingClientRect().top + this.getScrollTop(window);
 }
+
+export function urlParser(url) {
+  let urlObj = new URL(url);
+  urlObj.__search = parseSearch(urlObj.search);
+
+  urlObj.getSearch = function(key) {
+    return urlObj.__search[key];
+  }
+
+  urlObj.setSearch = function(key, value) {
+    urlObj.__search[key] = value;
+    urlObj.search = stringifySearch(urlObj.__search);
+    urlObj.href = urlObj.origin + urlObj.pathname + urlObj.search + urlObj.hash;
+  }
+
+  urlObj.removeSearch = function(key) {
+    delete urlObj.__search[key];
+    urlObj.search = stringifySearch(urlObj.__search);
+    urlObj.href = urlObj.origin + urlObj.pathname + urlObj.search + urlObj.hash;
+  }
+
+  return urlObj;
+}
+
+export function parseSearch(queryString) {
+  const obj = Object.create(null);
+  const sep = '&';
+  const eq = '=';
+
+  if (typeof queryString !== 'string' || queryString.length === 0) {
+    return obj;
+  }
+  if (queryString[0] === '?') queryString = queryString.substr(1);
+  const params = queryString.split(sep);
+  let i = 0;
+  let l = params.length;
+
+  for (; i < l; i++) {
+    let items = params[i].split(eq);
+    let queryKey = items[0].trim();
+    let queryVal = '';
+
+    if (items.length >= 3) {
+      items.splice(0, 1);
+
+      let lastIndex = items.length - 1;
+
+      items.forEach(function(v, i) {
+        v = v.trim();
+
+        if (i === lastIndex) {
+          queryVal += v;
+        } else {
+          queryVal += v + eq;
+        }
+      });
+    } else {
+      queryVal = items[1].trim();
+    }
+
+    let cur = obj[queryKey];
+
+    if (cur) {
+      if (Array.isArray(cur)) {
+        cur.push(queryVal);
+      } else {
+        let temp = cur;
+
+        obj[queryKey] = new Array();
+        obj[queryKey].push(temp);
+        obj[queryKey].push(queryVal);
+      }
+    } else {
+      obj[queryKey] = queryVal;
+    }
+  }
+  return obj;
+}
+
+export function stringifySearch(obj) {
+  const sep = '&';
+  const eq = '=';
+
+  if (obj !== null && typeof obj === 'object') {
+    const keys = Object.keys(obj);
+    const len = keys.length;
+    const flast = len - 1;
+    let fields = '';
+    let i = 0;
+
+    for (; i < len; i++) {
+      let k = keys[i];
+      let v = obj[k];
+      let ks = k + eq;
+
+      if (Array.isArray(v)) {
+        let vlen = v.length;
+        let vlast = vlen - 1;
+        let j = 0;
+        for (; j < vlen; ++j) {
+          fields += ks + v[j];
+          if (j < vlast) {
+            fields += sep;
+          }
+        }
+        if (vlen && i < flast) {
+          fields += sep;
+        }
+      } else {
+        fields += ks + v;
+        if (i < flast) {
+          fields += sep;
+        }
+      }
+    }
+
+    return '?' + fields;
+  }
+
+  return '';
+}
